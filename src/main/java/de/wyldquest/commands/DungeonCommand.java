@@ -1,0 +1,71 @@
+package de.wyldquest.commands;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.io.IOException;
+
+public class DungeonCommand implements CommandExecutor {
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+        if(!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "You must be a player to use this command");
+            return true;
+        }
+        Player player = (Player) sender;
+        switch (args.length) {
+            case 0:
+                player.sendMessage(ChatColor.RED + "/dungeon create <name>");
+                break;
+            case 1:
+                if(args[0].equalsIgnoreCase("setspawn")) {
+                    File file = new File("plugins/Dungeons", "config.yml");
+                    if(!file.exists()) {
+                        try {
+                            file.createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    YamlConfiguration yml = YamlConfiguration.loadConfiguration(file);
+                    yml.set("loc", player.getLocation());
+                    try {
+                        yml.save(file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    player.sendMessage("Spawn has been set");
+                    break;
+                }
+            default:
+                if(args[0].equalsIgnoreCase("create")) {
+                    String name = "";
+                    for(int i = 1; i < args.length; i++) {
+                        name = name + " " + args[i];
+                    }
+                    player.sendMessage("Dungeon" + name + " was created");
+                    File ordner = new File("plugins/Dungeons", name+".yml");
+                    if(!ordner.exists()) {
+                        try {
+                            ordner.createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                } else {
+                    player.sendMessage(ChatColor.RED + "/dungeon create <name>");
+                    break;
+                }
+
+        }
+
+        return false;
+    }
+}
