@@ -1,16 +1,23 @@
 package de.wyldquest.commands;
 
+import de.wyldquest.utils.Npc;
+import de.wyldquest.utils.NpcBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
 
 public class DungeonCommand implements CommandExecutor {
+
+    private NpcBuilder npcBuilder;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -42,6 +49,32 @@ public class DungeonCommand implements CommandExecutor {
                     }
                     player.sendMessage("Spawn has been set");
                     break;
+                }
+                if(args[0].equalsIgnoreCase("npc")) {
+                    npcBuilder = new NpcBuilder();
+                    Npc npc = new Npc(npcBuilder.getNPCs().get(0));
+                    File file = new File("plugins/Dungeons/","npcs.yml");
+                    FileConfiguration yml = YamlConfiguration.loadConfiguration(file);
+                    npcBuilder.getNPCs().forEach(e -> player.sendMessage("Id: " +e));
+                    /*player.sendMessage("NPC: " + npc.getName());
+                    player.sendMessage("NPC: " + npc.getEntityId());
+                    player.sendMessage("NPC: " + npc.getUUID());
+                    player.sendMessage("NPC: " + npc.getSkinUUID());
+                    player.sendMessage("NPC: " + npc.getSkinValue());
+                    player.sendMessage("NPC: " + npc.getSkinSignature());
+                    player.sendMessage("NPC: " + npc.getLocation());
+
+                    /*npc.createNPC("Enzait", player, "Enzait");*/
+                    break;
+                }
+            case 4:
+                if(args[0].equalsIgnoreCase("npc")) {
+                    if(args[1].equalsIgnoreCase("create")) {
+                        String name = args[2];
+                        String npcskin = args[3];
+                        npcBuilder = new NpcBuilder();
+                        npcBuilder.createNPC(name, player, npcskin);
+                    }
                 }
             default:
                 if(args[0].equalsIgnoreCase("create")) {
