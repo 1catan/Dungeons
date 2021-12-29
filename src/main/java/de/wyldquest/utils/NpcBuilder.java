@@ -3,10 +3,7 @@ package de.wyldquest.utils;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.wyldquest.Dungeon;
-import net.minecraft.network.protocol.game.PacketPlayOutEntityHeadRotation;
-import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
-import net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
+import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.DataWatcher;
 import net.minecraft.network.syncher.DataWatcherObject;
 import net.minecraft.network.syncher.DataWatcherRegistry;
@@ -14,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.server.network.PlayerConnection;
+import net.minecraft.util.MathHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,6 +21,7 @@ import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +81,6 @@ public class NpcBuilder {
         }
         System.out.println("npc."+id);
         yml.set("npc."+id+".name", name);
-        yml.set("npc."+id+".entity-id", entityPlayer.ae());
         yml.set("npc."+id+".uuid", uuid.toString());
         yml.set("npc."+id+".skinsuuid", skin[2]);
         yml.set("npc."+id+".value", skin[0]);
@@ -144,6 +142,22 @@ public class NpcBuilder {
         } else {
             npcs.get(player).add(entityPlayer);
         }
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                double distance = location.distance(player.getLocation());
+                if(distance <= 10) {
+                    location.setDirection(player.getLocation().subtract(location).toVector());
+
+                    PacketPlayOutEntityHeadRotation entityHeadRotation = new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (location.getYaw() * 256 / 360));
+                    PacketPlayOutEntity.PacketPlayOutEntityLook entityLook = new PacketPlayOutEntity.PacketPlayOutEntityLook(entityPlayer.ae(), (byte) (location.getYaw() * 256 / 360), (byte) (location.getPitch() * 256 / 360), true);
+                    connection.a(entityHeadRotation);
+                    connection.a(entityLook);
+                }
+            }
+        }.runTaskTimer(Dungeon.getPlugin(Dungeon.class), 1, 1);
+
     }
 
     public List<Integer> getNPCs() {

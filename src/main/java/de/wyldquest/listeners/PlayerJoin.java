@@ -20,9 +20,7 @@ public class PlayerJoin implements Listener {
 
         if(!npcBuilder.getNPCs().isEmpty()) {
             for (int i : npcBuilder.getNPCs()) {
-                System.out.println(i);
                 npcBuilder.setNPC(i, player);
-
             }
         }
     }
