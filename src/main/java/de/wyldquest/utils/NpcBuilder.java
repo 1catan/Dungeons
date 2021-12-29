@@ -26,12 +26,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NpcBuilder {
 
+    private static Map<Player, ArrayList<EntityPlayer>> npcs = new HashMap<>();
 
     public void createNPC(String name, Player player, String playerskinname) {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
@@ -71,42 +71,29 @@ public class NpcBuilder {
         }.runTaskLater(Dungeon.getPlugin(Dungeon.class),100);
 
         File file = new File("plugins/Dungeons/","npcs.yml");
-        if(!file.exists()){
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
         FileConfiguration yml = YamlConfiguration.loadConfiguration(file);
-
-        if(yml.get("last-created-npc-id") == null) {
+        int id;
+        if(yml.get("last-created-npc-id") == null)  {
             yml.set("last-created-npc-id", 0);
-            int id = yml.getInt("last-created-npc-id");
-            System.out.println("npc."+id);
-            yml.set("npc."+id+".name", name);
-            yml.set("npc."+id+".entity-id", entityPlayer.ae());
-            yml.set("npc."+id+".uuid", uuid.toString());
-            yml.set("npc."+id+".skinsuuid", skin[2]);
-            yml.set("npc."+id+".value", skin[0]);
-            yml.set("npc."+id+".signature", skin[1]);
-            yml.set("npc."+id+".location", location);
+            id = 0;
         } else {
-            yml.set("last-created-npc-id", yml.getInt("last-created-npc-id")+1);
-            int id = yml.getInt("last-created-npc-id");
+            id = yml.getInt("last-created-npc-id")+1;
             yml.set("last-created-npc-id", id);
-            System.out.println(yml.get("last-created-npc-id"));
-            System.out.println("npc."+id);
-            yml.set("npc."+id+".name", name);
-            yml.set("npc."+id+".entity-id", entityPlayer.ae());
-            yml.set("npc."+id+".uuid", uuid.toString());
-            yml.set("npc."+id+".skinsuuid", skin[2]);
-            yml.set("npc."+id+".value", skin[0]);
-            yml.set("npc."+id+".signature", skin[1]);
-            yml.set("npc."+id+".location", location);
-
         }
-
+        System.out.println("npc."+id);
+        yml.set("npc."+id+".name", name);
+        yml.set("npc."+id+".entity-id", entityPlayer.ae());
+        yml.set("npc."+id+".uuid", uuid.toString());
+        yml.set("npc."+id+".skinsuuid", skin[2]);
+        yml.set("npc."+id+".value", skin[0]);
+        yml.set("npc."+id+".signature", skin[1]);
+        yml.set("npc."+id+".location", location);
+        if(!npcs.containsKey(player)) {
+            npcs.put(player, new ArrayList<>());
+            npcs.get(player).add(entityPlayer);
+        } else {
+            npcs.get(player).add(entityPlayer);
+        }
 
         try {
             yml.save(file);
@@ -142,6 +129,8 @@ public class NpcBuilder {
         connection.a(entityMetadata);
         connection.a(entityHeadRotation);
 
+        entityPlayer.cm();
+
         new BukkitRunnable() {
 
             @Override
@@ -149,7 +138,12 @@ public class NpcBuilder {
                 connection.a(remove);
             }
         }.runTaskLater(Dungeon.getPlugin(Dungeon.class),100);
-
+        if(!npcs.containsKey(player)) {
+            npcs.put(player, new ArrayList<>());
+            npcs.get(player).add(entityPlayer);
+        } else {
+            npcs.get(player).add(entityPlayer);
+        }
     }
 
     public List<Integer> getNPCs() {
@@ -157,5 +151,9 @@ public class NpcBuilder {
         FileConfiguration yml = YamlConfiguration.loadConfiguration(file);
         List<String> stringList = yml.getConfigurationSection("npc").getKeys(false).stream().toList();
         return stringList.stream().map(s -> Integer.parseInt(s)).collect(Collectors.toList());
+    }
+
+    public static Map<Player, ArrayList<EntityPlayer>> getNpcs() {
+        return npcs;
     }
 }

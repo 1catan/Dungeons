@@ -2,6 +2,7 @@ package de.wyldquest.commands;
 
 import de.wyldquest.utils.Npc;
 import de.wyldquest.utils.NpcBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -73,7 +74,9 @@ public class DungeonCommand implements CommandExecutor {
                         String name = args[2];
                         String npcskin = args[3];
                         npcBuilder = new NpcBuilder();
-                        npcBuilder.createNPC(name, player, npcskin);
+                        for(Player all : Bukkit.getOnlinePlayers()) {
+                            npcBuilder.createNPC(name, all, npcskin);
+                        }
                     }
                 }
             default:

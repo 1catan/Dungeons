@@ -17,10 +17,13 @@ public class PlayerJoin implements Listener {
         PacketReader reader = new PacketReader(player);
         reader.inject();
         NpcBuilder npcBuilder = new NpcBuilder();
-        npcBuilder.getNPCs();
-        for(int i : npcBuilder.getNPCs()) {
-            System.out.println(i);
-            npcBuilder.setNPC(i, player);
+
+        if(!npcBuilder.getNPCs().isEmpty()) {
+            for (int i : npcBuilder.getNPCs()) {
+                System.out.println(i);
+                npcBuilder.setNPC(i, player);
+
+            }
         }
     }
 }

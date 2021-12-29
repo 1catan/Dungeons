@@ -11,14 +11,13 @@ import net.minecraft.network.protocol.game.PacketPlayInUseEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.level.WorldServer;
-import net.minecraft.world.EnumHand;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -78,28 +77,37 @@ public class PacketReader {
             }
             String action = getValueFromMethod(getValue(packet1, "b"), "a").toString();
             if(action.equals("ATTACK")) {
-                System.out.println("Left Click NPC");
-                player.sendMessage("Left Click NPC");
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Dungeon.getPlugin(Dungeon.class), () -> {
+                    ArrayList<EntityPlayer> list = NpcBuilder.getNpcs().get(player);
+                    for(EntityPlayer entityPlayer : list) {
+                        if(entityPlayer.ae() == id) {
+                            System.out.println("Left Click NPC");
+                            player.sendMessage("Left Click NPC");
+                            Bukkit.getServer().getPluginManager().callEvent(new NpcClickEvent(player, entityPlayer, NpcClickType.LEFT));
+                        }
+
+                    }
+                });
             }
             if(action.equals("INTERACT_AT")) {
                 return;
             }
             if(action.equals("INTERACT")) {
-                System.out.println("Right Click NPC");
-                player.sendMessage("Right Click NPC");
 
-                /*MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-                WorldServer world = ((CraftWorld)Bukkit.getWorlds().get(0)).getHandle();
-                                            //uuid und name uns config laden
-                GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "ersetzen");
-                EntityPlayer entityPlayer = new EntityPlayer(server, world, gameProfile);*/
-                NpcBuilder npcBuilder = new NpcBuilder();
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Dungeon.getPlugin(Dungeon.class), new Runnable() {
-                    @Override
-                    public void run() {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Dungeon.getPlugin(Dungeon.class), () -> {
+                    ArrayList<EntityPlayer> list = NpcBuilder.getNpcs().get(player);
+                    for(EntityPlayer entityPlayer : list) {
+                        if(entityPlayer.ae() == id) {
+                            System.out.println("Right Click NPC");
+                            player.sendMessage("Right Click NPC");
+                            Bukkit.getServer().getPluginManager().callEvent(new NpcClickEvent(player, entityPlayer, NpcClickType.RIGHT));
+                        }
 
-                        //Bukkit.getPluginManager().callEvent(new NpcClickEvent(player, entityPlayer, NpcClickType.RIGHT));
                     }
+
+
+
+
                 });
             }
         }

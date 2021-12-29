@@ -2,12 +2,14 @@ package de.wyldquest;
 
 import de.wyldquest.commands.DungeonCommand;
 import de.wyldquest.listeners.PlayerJoin;
+import de.wyldquest.listeners.PlayerQuit;
 import de.wyldquest.utils.PacketReader;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Dungeon extends JavaPlugin {
 
@@ -16,9 +18,10 @@ public class Dungeon extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        this.createFolder();
+        this.createFile();
         this.getCommand("dungeon").setExecutor(new DungeonCommand());
         Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
         if(!Bukkit.getOnlinePlayers().isEmpty()) {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 PacketReader packetReader = new PacketReader(player);
@@ -34,10 +37,14 @@ public class Dungeon extends JavaPlugin {
             packetReader.uninject();
         }
     }
-    public void createFolder() {
-        File folder = new File("plugins/Dungeons/npcs");
-        if(!folder.exists()) {
-            folder.mkdir();
+    public void createFile() {
+        File file = new File("plugins/Dungeons/","npcs.yml");
+        if(!file.exists()){
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
