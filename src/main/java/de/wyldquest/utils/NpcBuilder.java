@@ -11,7 +11,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.server.network.PlayerConnection;
-import net.minecraft.util.MathHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,7 +20,6 @@ import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class NpcBuilder {
 
-    private static Map<Player, ArrayList<EntityPlayer>> npcs = new HashMap<>();
+    private static final Map<Player, ArrayList<EntityPlayer>> npcs = new HashMap<>();
 
     public void createNPC(String name, Player player, String playerskinname) {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
