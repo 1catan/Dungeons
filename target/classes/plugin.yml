@@ -1,0 +1,6 @@
+name: Dungeons
+version: 0.1
+main: de.wyldquest.Dungeon
+api-version: 1.17
+commands:
+  dungeon:

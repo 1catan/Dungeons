@@ -1,6 +1,5 @@
 package de.wyldquest.listeners;
 
-import de.wyldquest.utils.Npc;
 import de.wyldquest.utils.NpcBuilder;
 import de.wyldquest.utils.PacketReader;
 import org.bukkit.Bukkit;
@@ -21,7 +20,6 @@ public class PlayerJoin implements Listener {
         if(!npcBuilder.getNPCs().isEmpty()) {
             for (int i : npcBuilder.getNPCs()) {
                 npcBuilder.setNPC(i, player);
-                //npcBuilder.rotation(i, player);
             }
         }
     }
