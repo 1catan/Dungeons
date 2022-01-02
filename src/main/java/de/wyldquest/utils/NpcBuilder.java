@@ -84,6 +84,7 @@ public class NpcBuilder {
         yml.set("npc."+id+".value", skin[0]);
         yml.set("npc."+id+".signature", skin[1]);
         yml.set("npc."+id+".location", location);
+        yml.set("npc-"+id+".lookclose", false);
         if(!npcs.containsKey(player)) {
             npcs.put(player, new ArrayList<>());
             npcs.get(player).add(entityPlayer);
@@ -127,6 +128,8 @@ public class NpcBuilder {
 
         entityPlayer.cm();
 
+
+
         new BukkitRunnable() {
 
             @Override
@@ -144,18 +147,36 @@ public class NpcBuilder {
 
             @Override
             public void run() {
-                double distance = location.distance(player.getLocation());
-                if(distance <= 10) {
-                    location.setDirection(player.getLocation().subtract(location).toVector());
+                if(npc.lookclose()) {
+                    if (Bukkit.getPlayer(player.getName()) == null) {
+                        this.cancel();
+                        System.out.println(Bukkit.getScheduler().getPendingTasks().size());
+                    } else {
+                        double distance = location.distance(player.getLocation());
+                        if (distance <= 10) {
+                            location.setDirection(player.getLocation().subtract(location).toVector());
 
-                    PacketPlayOutEntityHeadRotation entityHeadRotation = new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (location.getYaw() * 256 / 360));
-                    PacketPlayOutEntity.PacketPlayOutEntityLook entityLook = new PacketPlayOutEntity.PacketPlayOutEntityLook(entityPlayer.ae(), (byte) (location.getYaw() * 256 / 360), (byte) (location.getPitch() * 256 / 360), true);
-                    connection.a(entityHeadRotation);
-                    connection.a(entityLook);
+                            PacketPlayOutEntityHeadRotation entityHeadRotation = new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) (location.getYaw() * 256 / 360));
+                            PacketPlayOutEntity.PacketPlayOutEntityLook entityLook = new PacketPlayOutEntity.PacketPlayOutEntityLook(entityPlayer.ae(), (byte) (location.getYaw() * 256 / 360), (byte) (location.getPitch() * 256 / 360), true);
+                            connection.a(entityHeadRotation);
+                            connection.a(entityLook);
+                        }
+                    }
                 }
             }
         }.runTaskTimer(Dungeon.getPlugin(Dungeon.class), 1, 1);
 
+    }
+
+    public void removeNpc(int id) {
+        File file = new File("plugins/Dungeons/","npcs.yml");
+        FileConfiguration yml = YamlConfiguration.loadConfiguration(file);
+        yml.set("npc."+id, null);
+        try {
+            yml.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<Integer> getNPCs() {

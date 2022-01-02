@@ -68,6 +68,61 @@ public class DungeonCommand implements CommandExecutor {
                     /*npc.createNPC("Enzait", player, "Enzait");*/
                     break;
                 }
+            case 2:
+                if(args[0].equalsIgnoreCase("npc")) {
+                    if(args[1].equalsIgnoreCase("list")) {
+                        npcBuilder = new NpcBuilder();
+                        List<Integer> list = npcBuilder.getNPCs();
+                        player.sendMessage("§7Id §8| §7Name");
+                        for(int id : list) {
+                            Npc npc = new Npc(id);
+                            player.sendMessage(ChatColor.GRAY +""+ id + " " + npc.getName());
+                        }
+                    }
+                }
+            case 3:
+                if(args[0].equalsIgnoreCase("npc")) {
+                    if (args[1].equalsIgnoreCase("delete")) {
+                        try {
+                            int id = Integer.parseInt(args[2]);
+                            npcBuilder = new NpcBuilder();
+                            List<Integer> list = npcBuilder.getNPCs();
+                            if(list.contains(id)) {
+                                npcBuilder.removeNpc(id);
+                                player.sendMessage("deleted npc " + id);
+                            } else {
+                                player.sendMessage(ChatColor.RED + "enter a valid id");
+                            }
+                        } catch (NumberFormatException e) {
+                          player.sendMessage(ChatColor.RED + "enter a valid number");
+                        }
+                    }
+                    if(args[1].equalsIgnoreCase("rotation")) {
+                        try {
+                            int id = Integer.parseInt(args[2]);
+                            npcBuilder = new NpcBuilder();
+                            List<Integer> list = npcBuilder.getNPCs();
+                            if(list.contains(id)) {
+                                File file = new File("plugins/Dungeons/","npcs.yml");
+                                FileConfiguration yml = YamlConfiguration.loadConfiguration(file);
+                                boolean rotation = yml.getBoolean("npc."+id+".lookclose");
+                                rotation = !rotation;
+                                yml.set("npc."+id+".lookclose", rotation);
+                                player.sendMessage(ChatColor.GRAY +""+ id + " rotation is now " + (rotation ? "on" : "off"));
+                                try {
+                                    yml.save(file);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "enter a valid id");
+                            }
+                        } catch (NumberFormatException e) {
+                            player.sendMessage(ChatColor.RED + "enter a valid number");
+                        }
+                    }
+                }
+                break;
             case 4:
                 if(args[0].equalsIgnoreCase("npc")) {
                     if(args[1].equalsIgnoreCase("create")) {

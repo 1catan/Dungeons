@@ -44,6 +44,11 @@ public class Npc {
         return (Location) getData("location");
     }
 
+    public boolean lookclose() {
+        boolean lookclose = (boolean) getData("lookclose");
+        return lookclose;
+    }
+
     private Object getData(String data) {
         File file = new File("plugins/Dungeons/","npcs.yml");
         FileConfiguration yml = YamlConfiguration.loadConfiguration(file);
